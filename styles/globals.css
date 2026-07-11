@@ -142,7 +142,7 @@ body {
   color: var(--ink);
   text-align: left;
   white-space: pre-wrap;
-  animation: creditsRoll 110s linear forwards;
+  animation: creditsRoll 50s linear forwards;
 }
 .roll-text p { margin-bottom: 1.6em; }
 .roll-text .dear { font-size: 1.3em; color: var(--rose-deep); }
