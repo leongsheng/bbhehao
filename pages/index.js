@@ -37,17 +37,77 @@ export default function AskPage() {
     dodgeCount.current += 1;
     setFleeing(true);
     setNoIndex((i) => (i + 1) % NO_PHRASES.length);
-    setNoScale((s) => Math.max(0.55, s * 0.93));
+
+    // 计算下一个渲染时的缩放比例
+    const newScale = Math.max(0.55, noScale * 0.93);
+    setNoScale(newScale);
 
     const pad = 20;
     const w = window.innerWidth;
     const h = window.innerHeight;
-    // 避开屏幕正中间（好呀按钮区域），只在四周游走
+
+    // 获取"好呀"按钮的边界
+    const yesBtn = document.querySelector(".btn-yes");
+    const yesRect = yesBtn ? yesBtn.getBoundingClientRect() : null;
+
+    // 获取"才不要"按钮的真实物理大小（防二次缩放计算错误）
+    const noBtn = document.querySelector(".btn-no");
+    const noRect = noBtn ? noBtn.getBoundingClientRect() : null;
+
+    let baseW = 80; // 默认估算宽
+    let baseH = 32; // 默认估算高
+
+    if (noBtn) {
+      if (!noBtn.dataset.baseW && noRect) {
+        // 第一次逃跑时，根据当前缩放反推无缩放的基础大小
+        noBtn.dataset.baseW = String(noRect.width / noScale);
+        noBtn.dataset.baseH = String(noRect.height / noScale);
+      }
+      if (noBtn.dataset.baseW) {
+        baseW = parseFloat(noBtn.dataset.baseW);
+        baseH = parseFloat(noBtn.dataset.baseH);
+      }
+    }
+
+    const btnW = baseW * newScale;
+    const btnH = baseH * newScale;
+
     let top, left;
+    let attempts = 0;
+    const maxAttempts = 100;
+    const minDistance = 25; // 与"好呀"按钮之间的最小安全距离
+
     do {
-      top = pad + Math.random() * (h - 120);
-      left = pad + Math.random() * (w - 160);
-    } while (top > h * 0.3 && top < h * 0.68 && left > w * 0.1 && left < w * 0.8);
+      top = pad + Math.random() * Math.max(0, h - btnH - pad * 2);
+      left = pad + Math.random() * Math.max(0, w - btnW - pad * 2);
+      attempts++;
+
+      if (!yesRect) break;
+
+      // 检查矩形重叠（包含安全距离）
+      const overlaps = !(
+        left + btnW + minDistance < yesRect.left ||
+        left - minDistance > yesRect.right ||
+        top + btnH + minDistance < yesRect.top ||
+        top - minDistance > yesRect.bottom
+      );
+
+      if (!overlaps) break;
+    } while (attempts < maxAttempts);
+
+    // 兜底：如果多次尝试还是重叠（比如屏幕极小），强制放置到屏幕上/下对侧区域
+    if (attempts >= maxAttempts && yesRect) {
+      if (yesRect.top > h / 2) {
+        // "好呀"按钮在偏下，强制把"才不要"放置在偏上安全区域
+        top = pad + Math.random() * Math.max(0, yesRect.top - btnH - minDistance - pad);
+      } else {
+        // "好呀"按钮在偏上，强制把"才不要"放置在偏下安全区域
+        const startY = yesRect.bottom + minDistance;
+        top = startY + Math.random() * Math.max(0, h - btnH - pad - startY);
+      }
+      left = pad + Math.random() * Math.max(0, w - btnW - pad * 2);
+    }
+
     setNoPos({ top, left });
 
     // 悄悄记录她挣扎了几次 😂（失败也无所谓）
