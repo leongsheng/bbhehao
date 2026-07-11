@@ -49,7 +49,7 @@ export default function LetterPage() {
   // 5 秒后出现"跳到最后"按钮
   useEffect(() => {
     if (!ready || rolled) return;
-    const t = setTimeout(() => setShowSkip(true), 5000);
+    const t = setTimeout(() => setShowSkip(true), 3000);
     return () => clearTimeout(t);
   }, [ready, rolled]);
 
