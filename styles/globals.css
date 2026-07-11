@@ -1,0 +1,339 @@
+/* ============ 设计基调 ============
+   soft blush 粉 + 奶油白 + 深梅子色文字 + 抽奖金
+   标题用手写体 Ma Shan Zheng，像手写情书
+=================================== */
+:root {
+  --bg-top: #fff7f8;
+  --bg-bottom: #ffdfe7;
+  --rose: #e85d75;
+  --rose-deep: #c2405c;
+  --ink: #4a2b33;
+  --ink-soft: #8a6570;
+  --cream: #fffdf9;
+  --gold: #e8b54a;
+  --shadow: 0 10px 30px rgba(194, 64, 92, 0.25);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  overflow-x: hidden;
+}
+
+.hand { font-family: "Ma Shan Zheng", "PingFang SC", cursive; font-weight: 400; }
+
+/* ============ 提问页 ============ */
+.ask-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ask-title {
+  font-size: clamp(2.2rem, 10vw, 3.4rem);
+  line-height: 1.35;
+  text-align: center;
+  color: var(--rose-deep);
+  margin-bottom: 8vh;
+  text-shadow: 0 2px 0 #fff;
+  animation: fadeDown 0.9s ease both;
+}
+
+.btn-yes {
+  width: min(82vw, 340px);
+  padding: 20px 0;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.6rem;
+  font-family: "Ma Shan Zheng", cursive;
+  letter-spacing: 0.2em;
+  color: #fff;
+  background: linear-gradient(135deg, #ff8fab 0%, var(--rose) 55%, var(--rose-deep) 100%);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  animation: breathe 2.2s ease-in-out infinite;
+}
+.btn-yes:active { transform: scale(0.96); }
+
+.yes-hint {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  animation: twinkle 1.8s ease-in-out infinite;
+}
+
+.btn-no {
+  margin-top: 7vh;
+  padding: 7px 16px;
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px dashed #e5b8c2;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform 0.18s ease, top 0.18s ease, left 0.18s ease;
+  z-index: 20;
+  white-space: nowrap;
+  user-select: none;
+  touch-action: none;
+}
+.btn-no.fleeing { position: fixed; margin: 0; }
+
+.toast {
+  position: fixed;
+  bottom: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(74, 43, 51, 0.9);
+  color: #fff;
+  font-size: 0.85rem;
+  padding: 10px 18px;
+  border-radius: 999px;
+  z-index: 50;
+  animation: fadeDown 0.3s ease both;
+  white-space: nowrap;
+}
+
+/* 飘落爱心背景 */
+.heart-float {
+  position: absolute;
+  bottom: -8vh;
+  font-size: 1.4rem;
+  opacity: 0;
+  animation: floatUp linear infinite;
+  pointer-events: none;
+}
+
+/* ============ 信件页 ============ */
+.letter-page {
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+.roll-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  /* 上下渐隐，像电影字幕 */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+}
+
+.roll-text {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: min(86vw, 560px);
+  transform: translateX(-50%);
+  font-family: "Ma Shan Zheng", cursive;
+  font-size: clamp(1.25rem, 5.4vw, 1.7rem);
+  line-height: 2.15;
+  color: var(--ink);
+  text-align: left;
+  white-space: pre-wrap;
+  animation: creditsRoll 55s linear forwards;
+}
+.roll-text p { margin-bottom: 1.6em; }
+.roll-text .dear { font-size: 1.3em; color: var(--rose-deep); }
+
+.skip-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 18px;
+  z-index: 30;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #f0cdd6;
+  border-radius: 999px;
+  cursor: pointer;
+  animation: fadeDown 0.5s ease both;
+}
+
+.music-btn {
+  position: fixed;
+  left: 16px;
+  bottom: 18px;
+  z-index: 30;
+  width: 42px;
+  height: 42px;
+  font-size: 1.1rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #f0cdd6;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.music-btn.playing { animation: spinSlow 4s linear infinite; }
+
+.draw-cta-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  z-index: 40;
+  background: rgba(255, 247, 248, 0.6);
+  backdrop-filter: blur(3px);
+  animation: fadeDown 0.8s ease both;
+}
+.draw-cta {
+  padding: 18px 46px;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.5rem;
+  font-family: "Ma Shan Zheng", cursive;
+  letter-spacing: 0.15em;
+  color: #fff;
+  background: linear-gradient(135deg, var(--gold), #d98f2b);
+  box-shadow: 0 10px 30px rgba(217, 143, 43, 0.4);
+  cursor: pointer;
+  animation: breathe 2s ease-in-out infinite;
+}
+.draw-cta-sub { font-size: 0.85rem; color: var(--ink-soft); }
+
+/* ============ 轮盘弹窗 ============ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 43, 51, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeDown 0.35s ease both;
+}
+
+.wheel-card {
+  background: var(--cream);
+  border-radius: 28px;
+  padding: 26px 20px 30px;
+  width: min(92vw, 400px);
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+}
+.wheel-card h2 { font-family: "Ma Shan Zheng", cursive; color: var(--rose-deep); font-size: 1.7rem; margin-bottom: 4px; }
+.wheel-card .once { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 18px; }
+
+.wheel-wrap { position: relative; width: min(78vw, 320px); margin: 0 auto; }
+
+.wheel-pointer {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 26px solid var(--rose-deep);
+  z-index: 5;
+  filter: drop-shadow(0 3px 4px rgba(0,0,0,0.25));
+}
+
+.wheel {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 8px solid #fff;
+  box-shadow: 0 8px 26px rgba(194, 64, 92, 0.35), inset 0 0 0 3px rgba(255,255,255,0.6);
+  position: relative;
+  background: conic-gradient(
+    #ffd6e0 0deg 45deg,
+    #fff3f5 45deg 90deg,
+    #ffe3b3 90deg 135deg,
+    #fff3f5 135deg 180deg,
+    #ffd6e0 180deg 225deg,
+    #fff3f5 225deg 270deg,
+    #ffe3b3 270deg 315deg,
+    #fff3f5 315deg 360deg
+  );
+}
+.wheel.spinning { transition: transform 5.4s cubic-bezier(0.12, 0.82, 0.18, 1); }
+
+.wheel-label {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 46%;
+  transform-origin: 0 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: right;
+  padding-right: 14px;
+}
+
+.wheel-go {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 74px; height: 74px;
+  border-radius: 50%;
+  border: 5px solid #fff;
+  background: radial-gradient(circle at 32% 28%, #ff9db5, var(--rose-deep));
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  z-index: 6;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+}
+.wheel-go:disabled { filter: grayscale(0.5); cursor: not-allowed; }
+
+/* ============ 中奖结果 ============ */
+.result-card {
+  background: var(--cream);
+  border-radius: 28px;
+  padding: 38px 26px;
+  width: min(90vw, 380px);
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+.result-card .emoji { font-size: 3rem; }
+.result-card h2 { font-family: "Ma Shan Zheng", cursive; color: var(--rose-deep); font-size: 1.6rem; margin: 10px 0 16px; }
+.result-prize {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--ink);
+  background: linear-gradient(135deg, #fff0d1, #ffe0e8);
+  border: 2px dashed var(--gold);
+  border-radius: 16px;
+  padding: 18px 14px;
+  margin-bottom: 16px;
+}
+.result-note { font-size: 0.85rem; color: var(--ink-soft); line-height: 1.7; }
+
+/* ============ 动画 ============ */
+@keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes twinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: none; } }
+@keyframes floatUp {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  12% { opacity: 0.8; }
+  100% { transform: translateY(-115vh) rotate(28deg); opacity: 0; }
+}
+@keyframes creditsRoll { from { transform: translate(-50%, 0); } to { transform: translate(-50%, -230%); } }
+@keyframes spinSlow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-yes, .draw-cta, .yes-hint, .heart-float { animation: none; }
+}
